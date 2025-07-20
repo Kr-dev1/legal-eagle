@@ -125,7 +125,7 @@ function ButtonWithLoader() {
     return (
         <Button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2"
             disabled={pending}
         >
             {pending && (
