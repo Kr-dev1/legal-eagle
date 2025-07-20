@@ -1,26 +1,21 @@
-import {betterAuth} from "better-auth";
-import {sendEmail} from "/";
-import {APIError} from "better-auth/api"; // your email sending function
+"use server";
 
-export const auth = betterAuth({
-    emailAndPassword: {
-        enabled: true,
+import { auth } from "@/auth";
+import { APIError } from "better-auth/api";
 
-        onPasswordReset: async ({user}, request) => {
-            try {
-                await auth.api.requestPasswordReset({
-                    body: {
-                        name,
-                        email,
-                        password,
-                    },
-                });
-                return {success: true};
-            } catch (error) {
-                if (error instanceof APIError) {
-                    console.log("API Error:", error.message);
-                }
-            }
-        },
-    },
-});
+export const requestResetPass = async (formData: FormData) => {
+  const email = formData.get("email") as string;
+  try {
+    await auth.api.requestPasswordReset({
+      body: {
+        email,
+        redirectTo: "http://localhost:3000/newpass"
+      },
+    });
+    return { success: true };
+  } catch (error) {
+    if (error instanceof APIError) {
+      console.log("API Error:", error.message);
+    }
+  }
+};

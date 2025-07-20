@@ -1,7 +1,7 @@
 "use client"
 
-import {cn} from "@/lib/utils"
-import {Button} from "@/components/ui/button"
+import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
@@ -9,7 +9,7 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
-import {Input} from "@/components/ui/input"
+import { Input } from "@/components/ui/input"
 import {
     Form,
     FormControl,
@@ -19,26 +19,34 @@ import {
     FormLabel,
     FormMessage,
 } from "@/components/ui/form"
-import {zodResolver} from "@hookform/resolvers/zod"
-import {z} from "zod"
-import {useForm} from "react-hook-form"
-import {useActionState} from "react"
-import {useFormStatus} from "react-dom";
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
+import { useForm } from "react-hook-form"
+import { useActionState, useEffect } from "react"
+import { useFormStatus } from "react-dom";
 import Link from "next/link"
-import {signIn} from "@/app/signin/server/action"
+import { signIn } from "@/app/signin/server/action"
+import { useRouter } from "next/navigation"
 
 const formSchema = z.object({
     email: z.email(),
-    password: z.string()
+    password: z
+        .string()
+        .min(8, { message: "Password must be at least 8 characters long" })
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])/, {
+            message: "Password must contain at least 1 uppercase letter, 1 lowercase letter, and 1 special character",
+        }),
 })
 
 export function LoginForm({
-                              className,
-                              ...props
-                          }: React.ComponentProps<"div">) {
+    className,
+    ...props
+}: React.ComponentProps<"div">) {
+    const router = useRouter()
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
+        mode: "all",
         defaultValues: {
             email: "",
             password: ""
@@ -47,8 +55,14 @@ export function LoginForm({
     const [state, formAction] = useActionState(
         (prevState: { success: boolean } | undefined, formData: FormData) =>
             signIn(formData),
-        {success: false}
+        { success: false }
     )
+
+    useEffect(() => {
+        if (state?.success) {
+            router.push("/dashboard")
+        }
+    }, [state, router])
 
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -65,20 +79,20 @@ export function LoginForm({
                             <FormField
                                 control={form.control}
                                 name="email"
-                                render={({field}) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Email</FormLabel>
                                         <FormControl>
                                             <Input placeholder="johndoe@gmail.com" {...field} />
                                         </FormControl>
-                                        <FormMessage/>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
                             <FormField
                                 control={form.control}
                                 name="password"
-                                render={({field}) => (
+                                render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Password</FormLabel>
                                         <FormControl>
@@ -89,15 +103,14 @@ export function LoginForm({
                                                 Forgot Password?
                                             </Link>
                                         </FormDescription>
-                                        <FormMessage/>
+                                        <FormMessage />
                                     </FormItem>
                                 )}
                             />
-                            <ButtonWithLoader/>
+                            <ButtonWithLoader errors={form.formState.errors} />
                         </form>
                     </Form>
-                    <p className="text-xs mt-4 text-right">Don&apos;t have an account? <Link className="text-indigo-300"
-                                                                                             href="/signin">Sign
+                    <p className="text-xs mt-4 text-right">Don&apos;t have an account? <Link className="text-indigo-300" href="/signin">Sign
                         In</Link></p>
                 </CardContent>
             </Card>
@@ -105,14 +118,14 @@ export function LoginForm({
     )
 }
 
-function ButtonWithLoader() {
-    const {pending} = useFormStatus();
+function ButtonWithLoader({ errors }: any) {
+    const { pending } = useFormStatus();
 
     return (
         <Button
             type="submit"
             className="w-full flex justify-center items-center gap-2"
-            disabled={pending}
+            disabled={pending || errors.email || errors.password}
         >
             {pending && (
                 <svg
