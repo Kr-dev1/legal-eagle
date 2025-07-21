@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { useActionState } from "react"
+import { useForm, useFormContext } from "react-hook-form"
+import { useActionState, useEffect, useState } from "react"
 import { signUp } from "@/app/signup/server/action"
 import { useFormStatus } from "react-dom";
 import Link from "next/link"
@@ -32,7 +32,12 @@ const formSchema = z.object({
         message: "Username must be at least 2 characters.",
     }),
     email: z.email(),
-    password: z.string()
+    password: z
+        .string()
+        .min(8, { message: "Password must be at least 8 characters long" })
+        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])/, {
+            message: "Password must contain at least 1 uppercase letter, 1 lowercase letter, and 1 special character",
+        }),
 })
 
 export function RegisterForm({
@@ -42,6 +47,7 @@ export function RegisterForm({
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
+        mode: 'all',
         defaultValues: {
             username: "",
             email: "",
@@ -54,9 +60,6 @@ export function RegisterForm({
         { success: false }
 
     )
-
-    console.log(state);
-
 
     return (
         <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -109,7 +112,7 @@ export function RegisterForm({
                                     </FormItem>
                                 )}
                             />
-                            <ButtonWithLoader />
+                            <ButtonWithLoader errors={form.formState.errors} />
                         </form>
                     </Form>
                     <p className="text-xs mt-4 text-right">Already have an account? <Link className="text-indigo-300" href="/signin">Sign In</Link></p>
@@ -119,14 +122,28 @@ export function RegisterForm({
     )
 }
 
-function ButtonWithLoader() {
+function ButtonWithLoader({ errors }: { errors: any }) {
     const { pending } = useFormStatus();
+    const [disabled, setDisabled] = useState(true)
+    const form = useFormContext();
+
+    useEffect(() => {
+        const email = form.getValues("email");
+        const password = form.getValues("password");
+        const username = form.getValues("username");
+        
+        if (Object.keys(errors).length === 0 && !pending && email && username && password) {
+            setDisabled(false)
+        } else {
+            setDisabled(true)
+        }
+    }, [errors, pending, form])
 
     return (
         <Button
             type="submit"
             className="w-full flex items-center justify-center gap-2"
-            disabled={pending}
+            disabled={disabled}
         >
             {pending && (
                 <svg

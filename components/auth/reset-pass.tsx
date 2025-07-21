@@ -164,7 +164,7 @@ function ButtonWithLoader({ errors }: any) {
                     />
                 </svg>
             )}
-            {pending ? "Logging In" : "Login"}
+            Reset Password
         </Button>
     );
 }

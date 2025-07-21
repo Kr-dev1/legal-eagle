@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { useActionState, useEffect } from "react"
+import { useForm, useFormContext } from "react-hook-form"
+import { useActionState, useEffect, useState } from "react"
 import { useFormStatus } from "react-dom";
 import Link from "next/link"
 import { signIn } from "@/app/signin/server/action"
@@ -110,8 +110,7 @@ export function LoginForm({
                             <ButtonWithLoader errors={form.formState.errors} />
                         </form>
                     </Form>
-                    <p className="text-xs mt-4 text-right">Don&apos;t have an account? <Link className="text-indigo-300" href="/signin">Sign
-                        In</Link></p>
+                    <p className="text-xs mt-4 text-right">Don&apos;t have an account? <Link className="text-indigo-300" href="/signup">Register</Link></p>
                 </CardContent>
             </Card>
         </div>
@@ -120,8 +119,20 @@ export function LoginForm({
 
 function ButtonWithLoader({ errors }: any) {
     const { pending } = useFormStatus();
+    const [disabled, setDisabled] = useState(true)
+    const form = useFormContext();
 
+    useEffect(() => {
+        const email = form.getValues("email");
+        const password = form.getValues("password");
+        if (Object.keys(errors).length === 0 && !pending && email && password) {
+            setDisabled(false)
+        } else {
+            setDisabled(true)
+        }
+    }, [errors, pending, form])
     return (
+
         <Button
             type="submit"
             className="w-full flex justify-center items-center gap-2"

@@ -15,7 +15,7 @@ export const requestResetPass = async (formData: FormData) => {
     return { success: true };
   } catch (error) {
     if (error instanceof APIError) {
-      console.log("API Error:", error.message);
+      console.error("API Error:", error.message);
     }
   }
 };
