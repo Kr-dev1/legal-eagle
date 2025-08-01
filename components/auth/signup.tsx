@@ -26,6 +26,7 @@ import { useActionState, useEffect, useState } from "react"
 import { signUp } from "@/app/signup/server/action"
 import { useFormStatus } from "react-dom";
 import Link from "next/link"
+import GoogleButton from "./social/google"
 
 const formSchema = z.object({
     username: z.string().min(2, {
@@ -73,6 +74,7 @@ export function RegisterForm({
                 <CardContent>
                     <Form {...form}>
                         <form action={formAction} className="space-y-8">
+                            <GoogleButton />
                             <FormField
                                 control={form.control}
                                 name="username"
@@ -131,7 +133,7 @@ function ButtonWithLoader({ errors }: { errors: any }) {
         const email = form.getValues("email");
         const password = form.getValues("password");
         const username = form.getValues("username");
-        
+
         if (Object.keys(errors).length === 0 && !pending && email && username && password) {
             setDisabled(false)
         } else {

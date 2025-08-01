@@ -27,6 +27,8 @@ import { useFormStatus } from "react-dom";
 import Link from "next/link"
 import { signIn } from "@/app/signin/server/action"
 import { useRouter } from "next/navigation"
+import { authClient } from "@/lib/auth-client"
+import GoogleButton from "./social/google"
 
 const formSchema = z.object({
     email: z.email(),
@@ -68,14 +70,15 @@ export function LoginForm({
         <div className={cn("flex flex-col gap-6", className)} {...props}>
             <Card>
                 <CardHeader>
-                    <CardTitle>Login to your account</CardTitle>
-                    <CardDescription>
-                        Enter your email below to login to your account
+                    <CardTitle className="text-center">Login to your account</CardTitle>
+                    <CardDescription className="text-center">
+                        Enter your email below or continue with Google to log in to your account
                     </CardDescription>
                 </CardHeader>
                 <CardContent>
                     <Form {...form}>
                         <form action={formAction} className="space-y-8">
+                            <GoogleButton />
                             <FormField
                                 control={form.control}
                                 name="email"
