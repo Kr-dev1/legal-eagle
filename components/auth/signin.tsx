@@ -27,18 +27,11 @@ import { useFormStatus } from "react-dom";
 import Link from "next/link"
 import { signIn } from "@/app/signin/server/action"
 import { useRouter } from "next/navigation"
-import { authClient } from "@/lib/auth-client"
 import GoogleButton from "./social/google"
+import { signInSchema } from "@/app/signin/server/schema."
+import { toast } from "sonner"
 
-const formSchema = z.object({
-    email: z.email(),
-    password: z
-        .string()
-        .min(8, { message: "Password must be at least 8 characters long" })
-        .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>])/, {
-            message: "Password must contain at least 1 uppercase letter, 1 lowercase letter, and 1 special character",
-        }),
-})
+
 
 export function LoginForm({
     className,
@@ -46,8 +39,8 @@ export function LoginForm({
 }: React.ComponentProps<"div">) {
     const router = useRouter()
 
-    const form = useForm<z.infer<typeof formSchema>>({
-        resolver: zodResolver(formSchema),
+    const form = useForm<z.infer<typeof signInSchema>>({
+        resolver: zodResolver(signInSchema),
         mode: "all",
         defaultValues: {
             email: "",
@@ -63,6 +56,7 @@ export function LoginForm({
     useEffect(() => {
         if (state?.success) {
             router.push("/dashboard")
+            toast.success("LoggedIn")
         }
     }, [state, router])
 
