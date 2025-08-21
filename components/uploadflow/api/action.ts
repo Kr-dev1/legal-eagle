@@ -3,6 +3,7 @@
 import { auth } from "@/auth";
 import { Country } from "@/components/ui/country-dropdown";
 import { prisma } from "@/lib/prisma/prisma";
+import { loadPdfFromUrl } from "@/lib/processing/textExtraction";
 import { headers } from "next/headers";
 
 type Submission = {
@@ -40,6 +41,19 @@ export async function submitContract(data: Submission) {
       userID: session.user.id,
     },
   });
+  try {
+    return loadPdfFromUrl(
+      saveContractDetails.fileUrl,
+      saveContractDetails.id,
+      session.user.id,
+    );
+  } catch (err) {
+    console.error("Error loading PDF from URL:", err);
+    return {
+      success: false,
+      message: "Failed to process the contract. Please try again later.",
+    };
+  }
   return {
     success: true,
     message: "Your contract is being analysed",
