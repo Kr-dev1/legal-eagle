@@ -1,20 +1,20 @@
-'use client';
+"use client";
 
-import { UploadIcon } from 'lucide-react';
-import type { ReactNode } from 'react';
-import { createContext, useContext } from 'react';
-import type { DropEvent, DropzoneOptions, FileRejection } from 'react-dropzone';
-import { useDropzone } from 'react-dropzone';
-import { Button } from '@/components/ui/button';
-import { cn, useUploadThing } from '@/lib/utils';
-import { toast } from "sonner"
+import { UploadIcon } from "lucide-react";
+import type { ReactNode } from "react";
+import { createContext, useContext } from "react";
+import type { DropEvent, DropzoneOptions, FileRejection } from "react-dropzone";
+import { useDropzone } from "react-dropzone";
+import { Button } from "@/components/ui/button";
+import { cn, useUploadThing } from "@/lib/utils";
+import { toast } from "sonner";
 
 type DropzoneContextType = {
   src?: File[];
-  accept?: DropzoneOptions['accept'];
-  maxSize?: DropzoneOptions['maxSize'];
-  minSize?: DropzoneOptions['minSize'];
-  maxFiles?: DropzoneOptions['maxFiles'];
+  accept?: DropzoneOptions["accept"];
+  maxSize?: DropzoneOptions["maxSize"];
+  minSize?: DropzoneOptions["minSize"];
+  maxFiles?: DropzoneOptions["maxFiles"];
 };
 
 const renderBytes = (bytes: number) => {
@@ -28,16 +28,16 @@ const renderBytes = (bytes: number) => {
 };
 
 const DropzoneContext = createContext<DropzoneContextType | undefined>(
-  undefined
+  undefined,
 );
 
-export type DropzoneProps = Omit<DropzoneOptions, 'onDrop'> & {
+export type DropzoneProps = Omit<DropzoneOptions, "onDrop"> & {
   src?: File[];
   className?: string;
   onDrop?: (
     acceptedFiles: File[],
     fileRejections: FileRejection[],
-    event: DropEvent
+    event: DropEvent,
   ) => void;
   children?: ReactNode;
 };
@@ -57,8 +57,7 @@ export const Dropzone = ({
 }: DropzoneProps) => {
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     accept: {
-      "application/pdf": ['.pdf'],
-      "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [".docx"]
+      "application/pdf": [".pdf"],
     },
     maxFiles,
     maxSize,
@@ -69,16 +68,16 @@ export const Dropzone = ({
       if (fileRejections.length > 0) {
         const rejection = fileRejections[0];
         const error = rejection.errors[0];
-        if (error.code === 'file-too-large') {
+        if (error.code === "file-too-large") {
           const maxSizeMB = renderBytes(maxSize ?? 0);
           toast.error(`File is too large. Max allowed size is ${maxSizeMB}`);
-        } else if (error.code === 'file-too-small') {
+        } else if (error.code === "file-too-small") {
           const minSizeMB = renderBytes(minSize ?? 0);
           toast.error(`File is too small. Min size is ${minSizeMB}`);
         } else if (error.code === "file-invalid-type") {
-          toast.error("Unspported file type, Upload PDF or DOCX file")
+          toast.error("Unspported file type, Upload PDF or DOCX file");
         } else if (error.code === "too-many-files") {
-          toast.error("Max 5 files allowed as supporting document")
+          toast.error("Max 5 files allowed as supporting document");
         } else {
           toast.error(error.message);
         }
@@ -96,9 +95,9 @@ export const Dropzone = ({
     >
       <Button
         className={cn(
-          'relative h-auto flex-col overflow-hidden p-8',
-          isDragActive && 'outline-none ring-1 ring-ring',
-          className
+          "relative h-auto flex-col overflow-hidden p-8",
+          isDragActive && "outline-none ring-1 ring-ring",
+          className,
         )}
         disabled={disabled}
         type="button"
@@ -116,7 +115,7 @@ const useDropzoneContext = () => {
   const context = useContext(DropzoneContext);
 
   if (!context) {
-    throw new Error('useDropzoneContext must be used within a Dropzone');
+    throw new Error("useDropzoneContext must be used within a Dropzone");
   }
 
   return context;
@@ -144,16 +143,16 @@ export const DropzoneContent = ({
   }
 
   return (
-    <div className={cn('flex flex-col items-center justify-center', className)}>
+    <div className={cn("flex flex-col items-center justify-center", className)}>
       <div className="flex size-8 items-center justify-center rounded-md bg-muted text-muted-foreground">
         <UploadIcon size={16} />
       </div>
       <p className="my-2 w-full truncate font-medium text-sm">
         {src.length > maxLabelItems
-          ? `${new Intl.ListFormat('en').format(
-            src.slice(0, maxLabelItems).map((file) => file.name)
-          )} and ${src.length - maxLabelItems} more`
-          : new Intl.ListFormat('en').format(src.map((file) => file.name))}
+          ? `${new Intl.ListFormat("en").format(
+              src.slice(0, maxLabelItems).map((file) => file.name),
+            )} and ${src.length - maxLabelItems} more`
+          : new Intl.ListFormat("en").format(src.map((file) => file.name))}
       </p>
       <p className="w-full text-wrap text-muted-foreground text-xs">
         Drag and drop or click to replace
@@ -181,11 +180,11 @@ export const DropzoneEmptyState = ({
     return children;
   }
 
-  let caption = '';
+  let caption = "";
 
   if (accept) {
-    caption += 'Accepts ';
-    caption += new Intl.ListFormat('en').format(Object.keys(accept));
+    caption += "Accepts ";
+    caption += new Intl.ListFormat("en").format(Object.keys(accept));
   }
 
   if (minSize && maxSize) {
@@ -197,15 +196,18 @@ export const DropzoneEmptyState = ({
   }
 
   return (
-    <div className={cn('flex flex-col items-center justify-center', className)}>
+    <div className={cn("flex flex-col items-center justify-center", className)}>
       <div className="flex size-8 items-center justify-center rounded-lg bg-muted text-muted-foreground">
         <UploadIcon size={16} />
       </div>
       <p className="my-2 w-full truncate text-wrap font-medium text-sm">
-        Upload {maxFiles === 1 ? 'a file' : 'files'}
+        Upload {maxFiles === 1 ? "a file" : "files"}
       </p>
       <p className="w-full truncate text-wrap text-muted-foreground text-xs">
-        Drag and drop or click to upload
+        Only PDFs are supported.
+      </p>
+      <p className="w-full truncate text-wrap text-muted-foreground text-xs">
+        Scanned/image-based PDFs cannot be processed.
       </p>
       {caption && (
         <p className="text-wrap text-muted-foreground text-xs">{caption}.</p>

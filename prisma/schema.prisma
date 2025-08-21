@@ -21,6 +21,7 @@ model User {
   sessions      Session[]
   accounts      Account[]
   contract      ContractDetails[]
+  Embeddings    Embeddings[]
 
   @@unique([email])
   @@map("user")
@@ -72,14 +73,25 @@ model Verification {
 }
 
 model ContractDetails {
-  id          String    @id @default(cuid())
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
   deletedAt   DateTime?
   userID      String
   fileUrl     String
   fileKey     String
   userCountry Json
   orgCountry  Json
-  user        User      @relation(fields: [userID], references: [id])
+  user        User         @relation(fields: [userID], references: [id])
+  Embeddings  Embeddings[]
+}
+
+model Embeddings {
+  id                 String                       @id @default(cuid())
+  createdAt          DateTime                     @default(now())
+  contractId         String
+  contractEmbeddings Unsupported("vector(3072)")?
+  userId             String
+  user               User                         @relation(fields: [userId], references: [id])
+  contract           ContractDetails              @relation(fields: [contractId], references: [id])
 }
