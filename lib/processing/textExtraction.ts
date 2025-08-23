@@ -1,11 +1,14 @@
 import { PDFLoader } from "@langchain/community/document_loaders/fs/pdf";
 import fs from "fs/promises";
 import { embedder } from "./embedder";
+import { Country } from "@/components/ui/country-dropdown";
 
 export async function loadPdfFromUrl(
   url: string,
   contractId: string,
   userId: string,
+  orgCountry: Country,
+  userCountry: Country,
 ) {
   let localPath: string | null = null;
 
@@ -19,7 +22,13 @@ export async function loadPdfFromUrl(
     await fs.writeFile(localPath, buffer);
     const loader = new PDFLoader(localPath);
     const docs = await loader.load();
-    return await embedder(docs[0].pageContent, contractId, userId);
+    return await embedder(
+      docs[0].pageContent,
+      contractId,
+      userId,
+      orgCountry,
+      userCountry,
+    );
   } catch (error) {
     return {
       success: false,
