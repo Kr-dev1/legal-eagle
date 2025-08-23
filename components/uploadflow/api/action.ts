@@ -29,6 +29,7 @@ export async function submitContract(data: Submission) {
     return {
       success: false,
       message: "Missing fields. Please confirm all required fields are filled.",
+      data: "",
     };
   }
 
@@ -48,9 +49,9 @@ export async function submitContract(data: Submission) {
       saveContractDetails.id,
       session.user.id,
       data.orgCountry,
-      data.userCountry,
+      data.userCountry
     );
-    return { id: saveContractDetails.id, ...response };
+    return { data: saveContractDetails.id, ...response };
   } catch (err) {
     console.error("Error loading PDF from URL:", err);
     await prisma.contractDetails.delete({
@@ -59,6 +60,7 @@ export async function submitContract(data: Submission) {
     return {
       success: false,
       message: "Failed to process the contract. Please try again later.",
+      data: "",
     };
   }
 }

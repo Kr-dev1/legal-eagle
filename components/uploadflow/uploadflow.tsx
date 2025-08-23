@@ -51,7 +51,7 @@ const UploadFlow = () => {
           userCountry: uploads.userCountry,
         });
         if (res.success) {
-          router.push(`/chat/${res.id}`);
+          router.push(`/chat/${res.data}`);
           toast.success(res.message);
         } else {
           toast.error(res.message);
