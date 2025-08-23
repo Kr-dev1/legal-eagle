@@ -9,8 +9,8 @@ import { headers } from "next/headers";
 type Submission = {
   fileUrl: string;
   fileKey: string;
-  userCountry: Country | null;
-  orgCountry: Country | null;
+  userCountry: Country;
+  orgCountry: Country;
 };
 
 export async function submitContract(data: Submission) {
@@ -36,27 +36,29 @@ export async function submitContract(data: Submission) {
     data: {
       fileKey: data.fileKey,
       fileUrl: data.fileUrl,
-      orgCountry: data.orgCountry,
-      userCountry: data.userCountry,
+      orgCountry: JSON.parse(JSON.stringify(data.orgCountry)),
+      userCountry: JSON.parse(JSON.stringify(data.userCountry)),
       userID: session.user.id,
     },
   });
+
   try {
-    return loadPdfFromUrl(
+    const response = await loadPdfFromUrl(
       saveContractDetails.fileUrl,
       saveContractDetails.id,
       session.user.id,
+      data.orgCountry,
+      data.userCountry,
     );
+    return { id: saveContractDetails.id, ...response };
   } catch (err) {
     console.error("Error loading PDF from URL:", err);
+    await prisma.contractDetails.delete({
+      where: { id: saveContractDetails.id },
+    });
     return {
       success: false,
       message: "Failed to process the contract. Please try again later.",
     };
   }
-  return {
-    success: true,
-    message: "Your contract is being analysed",
-    id: saveContractDetails.id,
-  };
 }

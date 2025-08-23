@@ -8,7 +8,7 @@ export async function middleware(request: NextRequest) {
   // Public routes that don't need authentication
   if (pathname.includes("/signin") || pathname.includes("/signup")) {
     if (sessionCookie) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
+      return NextResponse.redirect(new URL("/chat", request.url));
     }
     return NextResponse.next();
   }
@@ -22,5 +22,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/dashboard", "/signin", "/signup", "/upload"],
+  matcher: ["/chat", "/signin", "/signup", "/upload"],
 };

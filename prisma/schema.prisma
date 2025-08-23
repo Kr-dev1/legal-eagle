@@ -73,17 +73,20 @@ model Verification {
 }
 
 model ContractDetails {
-  id          String       @id @default(cuid())
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  deletedAt   DateTime?
-  userID      String
-  fileUrl     String
-  fileKey     String
-  userCountry Json
-  orgCountry  Json
-  user        User         @relation(fields: [userID], references: [id])
-  Embeddings  Embeddings[]
+  id           String       @id @default(cuid())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+  deletedAt    DateTime?
+  title        String       @default("")
+  userID       String
+  fileUrl      String
+  fileKey      String
+  userCountry  Json
+  orgCountry   Json
+  documentType String       @default("")
+  user         User         @relation(fields: [userID], references: [id])
+  summary      String       @default("")
+  Embeddings   Embeddings[]
 }
 
 model Embeddings {
@@ -94,4 +97,13 @@ model Embeddings {
   userId             String
   user               User                         @relation(fields: [userId], references: [id])
   contract           ContractDetails              @relation(fields: [contractId], references: [id])
+}
+
+model Laws {
+  id         String   @id @default(cuid())
+  createdAt  DateTime @default(now())
+  updateAt   DateTime @updatedAt
+  lawContext String
+  law        String
+  country    String
 }
