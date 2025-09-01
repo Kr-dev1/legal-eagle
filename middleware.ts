@@ -4,16 +4,18 @@ import { getSessionCookie } from "better-auth/cookies";
 export async function middleware(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
   const pathname = request.nextUrl.pathname;
-
-  // Public routes that don't need authentication
-  if (pathname.includes("/signin") || pathname.includes("/signup")) {
+  if (
+    pathname.includes("/signin") ||
+    pathname.includes("/signup") ||
+    pathname.includes("/auth/callback")
+  ) {
     if (sessionCookie) {
-      return NextResponse.redirect(new URL("/chat", request.url));
+      if (pathname.includes("/signin") || pathname.includes("/signup")) {
+        return NextResponse.redirect(new URL("/auth/callback", request.url));
+      }
     }
     return NextResponse.next();
   }
-
-  // Protected routes that need authentication
   if (!sessionCookie) {
     return NextResponse.redirect(new URL("/signin", request.url));
   }
@@ -22,5 +24,5 @@ export async function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/chat", "/signin", "/signup", "/upload"],
+  matcher: ["/chat/:path*", "/signin", "/signup", "/upload", "/auth/callback"],
 };

@@ -8,6 +8,9 @@ import { Country, CountryDropdown } from "../ui/country-dropdown";
 import { submitContract } from "./api/action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useSearchParams } from 'next/navigation';
+import { ArrowLeft, ArrowLeftSquareIcon } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 
 type UploadState = {
   contract: File[];
@@ -16,6 +19,10 @@ type UploadState = {
 };
 
 const UploadFlow = () => {
+  const searchParams = useSearchParams();
+  const params = searchParams.get("new")
+  const queryClient = useQueryClient()
+
   const router = useRouter();
   const [step, setStep] = useState(0);
   const [uploads, setUploads] = useState<UploadState>({
@@ -53,6 +60,7 @@ const UploadFlow = () => {
         if (res.success) {
           router.push(`/chat/${res.data}`);
           toast.success(res.message);
+          queryClient.invalidateQueries({ queryKey: ["contracts"] })
         } else {
           toast.error(res.message);
         }
@@ -172,10 +180,25 @@ const UploadFlow = () => {
     <div className="flex w-full items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-2xl">
         <div className="mb-12">
-          <h1 className="font-bold text-2xl">Analyse Contract</h1>
-          <p className="text-sm font-semibold">
-            Upload Contract that you want us to analyse
-          </p>
+          {params ?
+            <>
+              <div className="flex items-center gap-4 ">
+                <span className="cursor-pointer" onClick={() => router.back()}>
+                  <ArrowLeft />
+                </span>
+                <h1 className="font-bold text-2xl">Analyse Contract</h1>
+              </div>
+              <p className="text-sm font-semibold ml-10">
+                Upload Contract that you want us to analyse
+              </p>
+            </> :
+            <>
+              <h1 className="font-bold text-2xl">Analyse Contract</h1>
+              <p className="text-sm font-semibold">
+                Upload Contract that you want us to analyse
+              </p>
+            </>
+          }
         </div>
         <p className="text-sm font-semibold mb-2">
           {step === 0

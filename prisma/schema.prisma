@@ -22,6 +22,7 @@ model User {
   accounts      Account[]
   contract      ContractDetails[]
   Embeddings    Embeddings[]
+  Chat          Chat[]
 
   @@unique([email])
   @@map("user")
@@ -87,6 +88,7 @@ model ContractDetails {
   user         User         @relation(fields: [userID], references: [id])
   summary      String       @default("")
   Embeddings   Embeddings[]
+  Chat         Chat[]
 }
 
 model Embeddings {
@@ -106,4 +108,20 @@ model Laws {
   lawContext String
   law        String
   country    String
+}
+
+model Chat {
+  id         String          @id @default(cuid())
+  createdAt  DateTime        @default(now())
+  content    String
+  role       Role
+  contractId String
+  userId     String
+  contract   ContractDetails @relation(fields: [contractId], references: [id])
+  user       User            @relation(fields: [userId], references: [id])
+}
+
+enum Role {
+  user
+  assistant
 }

@@ -48,12 +48,12 @@ export function LoginForm({
   const [state, formAction] = useActionState(
     (prevState: { success: boolean } | undefined, formData: FormData) =>
       signIn(formData),
-    { success: false, hasContract: false },
+    { success: false, hasContract: "" },
   );
 
   useEffect(() => {
     if (state?.success) {
-      state.hasContract ? router.replace("/chat") : router.replace("/upload");
+      state.hasContract ? router.replace(`/chat/${state.hasContract}`) : router.replace("/upload");
       toast.success("LoggedIn");
     } else {
       if (state?.message) {
@@ -74,8 +74,8 @@ export function LoginForm({
         </CardHeader>
         <CardContent>
           <Form {...form}>
+            <GoogleButton />
             <form action={formAction} className="space-y-8">
-              <GoogleButton />
               <FormField
                 control={form.control}
                 name="email"
