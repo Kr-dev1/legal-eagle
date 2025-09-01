@@ -30,9 +30,10 @@ export const embedder = async (
   contractId: string,
   userId: string,
   orgCountry: Country,
-  userCountry: Country,
+  userCountry: Country
 ) => {
   const checkForValidContract = await checkValidContract(text);
+
   if (!checkForValidContract.success) {
     return {
       success: false,
@@ -79,7 +80,7 @@ export const embedder = async (
     ]);
     // Generate embeddings
     for (const chunck of docOutput) {
-      const response = await geminiEmbedder(chunck.pageContent);
+      const response = await textEmbedder(chunck.pageContent);
 
       const record = await prisma.embeddings.create({
         data: {
@@ -89,13 +90,13 @@ export const embedder = async (
       });
 
       const result =
-        response.embeddings &&
+        response &&
         (await prisma.$executeRawUnsafe(
           `UPDATE "Embeddings"
        SET "contractEmbeddings" = $1::vector
        WHERE "id" = $2`,
-          JSON.stringify(response?.embeddings![0].values),
-          record.id,
+          JSON.stringify(response),
+          record.id
         ));
     }
 
@@ -111,7 +112,7 @@ export const embedder = async (
 };
 
 const checkValidContract = async (
-  text: string,
+  text: string
 ): Promise<ContractCheckResult> => {
   try {
     const llm = new ChatGoogleGenerativeAI({
@@ -158,7 +159,7 @@ const checkValidContract = async (
   }
 };
 
-export const geminiEmbedder = async (content: string) => {
+export const textEmbedder = async (content: string) => {
   const ai = new GoogleGenAI({
     apiKey: process.env.GEMINI_API_KEY,
   });
@@ -167,5 +168,5 @@ export const geminiEmbedder = async (content: string) => {
     contents: content,
   });
 
-  return response;
+  return response?.embeddings![0].values;
 };

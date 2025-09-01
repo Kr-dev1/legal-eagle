@@ -18,9 +18,12 @@ export const signIn = async (formData: FormData) => {
       where: {
         userID: response.user.id,
       },
+      orderBy: {
+        createdAt: "desc",
+      },
     });
 
-    return { success: true, hasContract: !!hasContracts.length };
+    return { success: true, hasContract: hasContracts[0].id };
   } catch (error) {
     if (error instanceof APIError) {
       console.error("API Error:", error);

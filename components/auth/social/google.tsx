@@ -1,14 +1,16 @@
-import { Button } from '@/components/ui/button'
-import { authClient } from '@/lib/auth-client'
-import React from 'react'
+"use client";
+import { Button } from "@/components/ui/button";
+import { authClient } from "@/lib/auth-client";
+import { useState, useEffect } from "react";
 
 const GoogleButton = () => {
   const handleGoogle = async () => {
-    const data = await authClient.signIn.social({
+    await authClient.signIn.social({
       provider: "google",
-      callbackURL: "/dashboard"
-    })
-  }
+      callbackURL: "/auth/callback",
+    });
+  };
+
   return (
     <Button onClick={handleGoogle} variant="secondary" className="w-full">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -19,7 +21,7 @@ const GoogleButton = () => {
       </svg>
       Continue with Google
     </Button>
-  )
-}
+  );
+};
 
-export default GoogleButton
+export default GoogleButton;

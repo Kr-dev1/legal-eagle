@@ -42,7 +42,6 @@ export async function submitContract(data: Submission) {
       userID: session.user.id,
     },
   });
-
   try {
     const response = await loadPdfFromUrl(
       saveContractDetails.fileUrl,
@@ -51,6 +50,12 @@ export async function submitContract(data: Submission) {
       data.orgCountry,
       data.userCountry
     );
+    console.log(response);
+    if (!response.success) {
+      await prisma.contractDetails.delete({
+        where: { id: saveContractDetails.id },
+      });
+    }
     return { data: saveContractDetails.id, ...response };
   } catch (err) {
     console.error("Error loading PDF from URL:", err);

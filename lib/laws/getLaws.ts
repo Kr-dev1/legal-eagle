@@ -18,7 +18,6 @@ export const getRules = async (law: string, country: string) => {
     !res || !res.updateAt || new Date(res.updateAt) < oneMonthAgo;
 
   if (shouldFetch) {
-    console.log("Fetching");
     const groundingTool = {
       googleSearch: {},
     };
@@ -50,5 +49,3 @@ export const getRules = async (law: string, country: string) => {
         });
   }
 };
-
-getRules("Mutual Non-Disclosure Agreement (NDA)", "India");
