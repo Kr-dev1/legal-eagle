@@ -56,7 +56,7 @@ export const embedder = async (
       chunkOverlap: 200,
     });
 
-    await prisma.contractDetails.update({
+    prisma.contractDetails.update({
       where: { id: contractId },
       data: {
         title: checkForValidContract.titleandparties,
@@ -67,12 +67,12 @@ export const embedder = async (
 
     if (checkForValidContract.documentType) {
       try {
-        await getRules(checkForValidContract.documentType, orgCountry.name);
-        await getRules(checkForValidContract.documentType, userCountry.name);
+        getRules(checkForValidContract.documentType, orgCountry.name);
+        getRules(checkForValidContract.documentType, userCountry.name);
       } catch (err) {
         console.error("Failed while fetching local regulations", err);
-        await getRules(checkForValidContract.documentType, orgCountry.name);
-        await getRules(checkForValidContract.documentType, userCountry.name);
+        getRules(checkForValidContract.documentType, orgCountry.name);
+        getRules(checkForValidContract.documentType, userCountry.name);
       }
     }
     const docOutput = await splitter.splitDocuments([

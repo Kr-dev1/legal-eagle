@@ -36,17 +36,12 @@ export const auth = betterAuth({
     autoSignInAfterVerification: false,
     sendVerificationEmail: async ({ user, url }) => {
       if (user.emailVerified) return;
-      const TWO_DAYS_MS = 2 * 24 * 60 * 60 * 1000;
-      const createdAt = new Date(user.createdAt).getTime();
-      const now = Date.now();
-      const timeSinceCreated = now - createdAt;
-      if (timeSinceCreated >= TWO_DAYS_MS) {
-        await sendEmail({
-          to: user.email,
-          subject: "Verify your email address",
-          url,
-        });
-      }
+      console.log(`Sending verification email to: ${user.email}`);
+      await sendEmail({
+        to: user.email,
+        subject: "Verify your email address",
+        url,
+      });
     },
   },
   plugins: [nextCookies()],

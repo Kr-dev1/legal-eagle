@@ -50,7 +50,6 @@ export async function submitContract(data: Submission) {
       data.orgCountry,
       data.userCountry
     );
-    console.log(response);
     if (!response.success) {
       await prisma.contractDetails.delete({
         where: { id: saveContractDetails.id },
